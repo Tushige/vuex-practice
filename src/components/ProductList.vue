@@ -1,27 +1,47 @@
 <template>
   <div>
     <h1>Product List</h1>
-    <ul>
-      <li v-for="product in products" :key="product.id">
-        {{ product.title }} - {{ product.price }}
+    <img v-if="isLoading" src="https://i.imgur.com/JfPpwOA.gif"/>
+    <ul v-else>
+      <li
+        v-for="product in products"
+        :key="product.id"
+        >
+        {{ product.title }} - {{ product.price | currency }} -- {{product.inventory}}
+        <button 
+          @click="addProductToCart(product)"
+          :disabled="!isProductInStock(product)"
+          >Add To Cart</button>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import shop from "@/api/shop";
-import store from "@/store/index";
+import { mapState, mapGetters, mapActions } from "vuex";
+
 export default {
+  data() {
+    return {
+      isLoading: true
+    };
+  },
+  methods: {
+    ...mapActions({
+      fetchProducts: "fetchProducts",
+      addProductToCart: "addProductToCart"
+    })
+  },
   computed: {
-    products() {
-      return store.state.products;
-    }
+    ...mapState({
+      products: state => state.products.products
+    }),
+    ...mapGetters({
+      isProductInStock: "isProductInStock"
+    })
   },
   created() {
-    shop.getProducts().then(products => {
-      store.commit("setProducts", products);
-    });
+    this.fetchProducts().then(() => (this.isLoading = false));
   }
 };
 </script>

@@ -12,16 +12,18 @@ export default {
     return new Promise(resolve => {
       setTimeout(() => {
         resolve(_products);
-      }, 100);
+      }, 1000);
     });
   },
 
-  buyProducts(products, cb, errorCb) {
-    setTimeout(() => {
-      // simulate random checkout failure.
-      Math.random() > 0.5 || navigator.userAgent.indexOf("PhantomJS") > -1
-        ? cb()
-        : errorCb();
-    }, 100);
+  buyProducts() {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        // simulate random checkout failure.
+        Math.random() > 0.5 || navigator.userAgent.indexOf("PhantomJS") > -1
+          ? resolve()
+          : reject();
+      }, 1000);
+    })
   }
 };
