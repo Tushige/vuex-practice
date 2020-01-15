@@ -1,17 +1,18 @@
-import shop from '@/api/shop'
-
-
+import shop from "@/api/shop";
 
 export default {
+  namespaced: true,
   state: {
     cart: [],
-    checkoutStatus: ''
+    checkoutStatus: ""
   },
   getters: {
     cartProducts(state, getters, rootState) {
       return state.cart.map(cartItem => {
-        return rootState.products.products.find(prod => prod.id === cartItem.id)
-      })
+        return rootState.products.products.find(
+          prod => prod.id === cartItem.id
+        );
+      });
     },
     totalPrice(state, getters, rootState) {
       return state.cart.reduce((prev, curr) => {
@@ -22,29 +23,32 @@ export default {
   },
   actions: {
     checkout({ commit }) {
-      shop.buyProducts().then(() => {
-        commit('emptycart');
-        commit('setCheckoutStatus', 'success');
-      }).catch(() => {
-        commit('setCheckoutStatus', 'fail');
-      })
+      shop
+        .buyProducts()
+        .then(() => {
+          commit("emptycart");
+          commit("setCheckoutStatus", "success");
+        })
+        .catch(() => {
+          commit("setCheckoutStatus", "fail");
+        });
     },
-    addProductToCart({ state, getters, commit }, product) {
-      if (!getters.isProductInStock(product)) {
+    addProductToCart({ state, commit, rootGetters }, product) {
+      if (!rootGetters["products/isProductInStock"](product)) {
         return;
       }
       const cartItem = state.cart.find(item => item.id === product.id);
       if (!cartItem) {
-        commit('pushProductToCart', product.id);
+        commit("pushProductToCart", product.id);
       } else {
-        commit('incrementProductQuantity', cartItem)
+        commit("incrementProductQuantity", cartItem);
       }
-      commit('decrementProductInventory', product);
+      commit("products/decrementProductInventory", product, { root: true });
     }
   },
   mutations: {
     emptycart(state) {
-      state.cart = []
+      state.cart = [];
     },
     incrementProductQuantity(state, cartItem) {
       cartItem.quantity++;
@@ -59,4 +63,4 @@ export default {
       });
     }
   }
-}
+};

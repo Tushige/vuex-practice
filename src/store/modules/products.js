@@ -1,6 +1,7 @@
-import shop from '@/api/shop'
+import shop from "@/api/shop";
 
 export default {
+  namespaced: true,
   state: {
     products: []
   },
@@ -15,9 +16,9 @@ export default {
       return state.products.filter(prod => prod.inventory > 0);
     },
     isProductInStock() {
-      return function (product) {
+      return function(product) {
         return product.inventory > 0;
-      }
+      };
     }
   },
   // can be complex methods but can never touch state
@@ -30,7 +31,7 @@ export default {
           commit("setProducts", products);
           resolve();
         });
-      })
+      });
     }
   },
   mutations: {
@@ -42,4 +43,4 @@ export default {
       product.inventory--;
     }
   }
-}
+};
